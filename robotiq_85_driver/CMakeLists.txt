@@ -3,7 +3,6 @@ project(robotiq_85_driver)
 
 find_package(catkin REQUIRED COMPONENTS roslaunch rospy)
 
-## Uncomment if the package has a setup.py
 catkin_python_setup()
 
 catkin_package()
