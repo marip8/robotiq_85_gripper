@@ -139,7 +139,7 @@ void MimicJointPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf )
 
   // Set max effort
   if(!has_pid_)
-    mimic_joint_->SetParam("max_force", 0, max_effort_);//SetMaxForce(0,max_effort_);
+    mimic_joint_->SetParam("fmax", 0, max_effort_);//SetMaxForce(0,max_effort_);
   // Listen to the update event. This event is broadcast every
   // simulation iteration.
   this->updateConnection = event::Events::ConnectWorldUpdateBegin(
