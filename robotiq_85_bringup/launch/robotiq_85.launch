@@ -2,10 +2,10 @@
 
 <launch>
     <arg name="dual_gripper" default="false"/>
-    <arg name="comport" default="/dev/ttyUSB0"/>
+    <arg name="comport" default="/dev/ttyUSB1"/>
     <arg name="baud" default="115200"/>
     <arg name="run_test" default="false"/>
-	        
+
     <!-- Robotiq 85 ROS Driver -->
     <node pkg="robotiq_85_driver" type="robotiq_85_driver" name="robotiq_85_driver" respawn="true" output="screen">
         <param name="num_grippers" value="1" unless="$(arg dual_gripper)"/>
@@ -18,7 +18,7 @@
     <group unless="$(arg dual_gripper)">
         <group ns="/gripper">
             <param name="robot_description" command="$(find xacro)/xacro.py $(find robotiq_85_description)/urdf/robotiq_85_gripper.xacro" />
-        
+
             <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
                 <param name="robot_description" value="robot_description"/>
                 <param name="publish_frequency" type="double" value="100.0" />
@@ -31,11 +31,11 @@
         </group>
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotiq_85_bringup)/rviz/robotiq_85.rviz" />
     </group>
-    
+
     <group if="$(arg dual_gripper)">
         <group ns="/left_gripper">
             <param name="robot_description" command="$(find xacro)/xacro.py $(find robotiq_85_description)/urdf/robotiq_85_gripper.xacro" />
-        
+
             <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
                 <param name="robot_description" value="robot_description"/>
                 <param name="publish_frequency" type="double" value="100.0" />
@@ -49,7 +49,7 @@
 
         <group ns="/right_gripper">
             <param name="robot_description" command="$(find xacro)/xacro.py $(find robotiq_85_description)/urdf/robotiq_85_gripper.xacro" />
-        
+
             <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
                 <param name="robot_description" value="robot_description"/>
                 <param name="publish_frequency" type="double" value="100.0" />
@@ -61,7 +61,7 @@
             </node>
         </group>
     </group>
-    
+
     <!-- Robotiq 85 ROS Test -->
     <node pkg="robotiq_85_driver" type="robotiq_85_test" name="robotiq_85_test" output="screen" if="$(arg run_test)">
         <param name="num_grippers" value="1" unless="$(arg dual_gripper)"/>
