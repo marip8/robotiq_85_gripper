@@ -8,6 +8,5 @@ find_package(catkin REQUIRED COMPONENTS roslaunch rospy)
 
 catkin_package()
 
-catkin_install_python(PROGRAMS bin/robotiq_85_driver bin/robotiq_85_test 
+catkin_install_python(PROGRAMS bin/robotiq_85_driver bin/robotiq_85_test bin/robotiq_85_test_close
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-                      
