@@ -55,6 +55,7 @@ import rospy
 
 class Robotiq85Driver:
     def __init__(self):
+        rospy.sleep(2.0) #put a sleep so it can connect to the force/torque sensor first
         self._num_grippers = rospy.get_param('~num_grippers',1)
         self._comport = rospy.get_param('~comport','/dev/ttyUSB0')
         self._baud = rospy.get_param('~baud','115200')
@@ -68,7 +69,7 @@ class Robotiq85Driver:
         if (self._num_grippers == 1):
             rospy.Subscriber("/gripper/cmd", GripperCmd, self._update_gripper_cmd, queue_size=10)
             self._gripper_pub = rospy.Publisher('/gripper/stat', GripperStat, queue_size=10)
-            self._gripper_joint_state_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)        
+            self._gripper_joint_state_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
         elif (self._num_grippers == 2):
             rospy.Subscriber("/left_gripper/cmd", GripperCmd, self._update_gripper_cmd, queue_size=10)
             self._left_gripper_pub = rospy.Publisher('/left_gripper/stat', GripperStat, queue_size=10)
