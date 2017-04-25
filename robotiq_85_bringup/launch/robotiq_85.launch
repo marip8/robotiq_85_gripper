@@ -18,7 +18,7 @@
     <!-- Gripper specific robot state publisher and parameters -->
     <group unless="$(arg dual_gripper)">
         <group ns="/$(arg prefix)gripper">
-            <param name="robot_description" command="$(find xacro)/xacro.py $(find robotiq_85_description)/urdf/robotiq_85_gripper.xacro" />
+            <param name="robot_description" command="$(find xacro)/xacro.py $(find robotiq_85_description)/urdf/$(arg prefix)robotiq_85_gripper.xacro" />
 
             <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
                 <param name="robot_description" value="robot_description"/>
