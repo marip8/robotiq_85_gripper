@@ -55,7 +55,7 @@ import rospy
 
 class Robotiq85Driver:
     def __init__(self):
-        rospy.sleep(2.0) #put a sleep so it can connect to the force/torque sensor first
+        rospy.sleep(4.0) #put a sleep so it can connect to the force/torque sensor first
         self._num_grippers = rospy.get_param('~num_grippers',1)
         self._comport = rospy.get_param('~comport','/dev/ttyUSB0')
         self._baud = rospy.get_param('~baud','115200')
