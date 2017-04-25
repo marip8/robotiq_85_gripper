@@ -5,6 +5,7 @@
     <arg name="comport" default="/dev/ttyUSB1"/>
     <arg name="baud" default="115200"/>
     <arg name="run_test" default="false"/>
+    <arg name="prefix" default=""/>
 
     <!-- Robotiq 85 ROS Driver -->
     <node pkg="robotiq_85_driver" type="robotiq_85_driver" name="robotiq_85_driver" respawn="true" output="screen">
@@ -16,7 +17,7 @@
 
     <!-- Gripper specific robot state publisher and parameters -->
     <group unless="$(arg dual_gripper)">
-        <group ns="/gripper">
+        <group ns="/$(arg prefix)gripper">
             <param name="robot_description" command="$(find xacro)/xacro.py $(find robotiq_85_description)/urdf/robotiq_85_gripper.xacro" />
 
             <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
@@ -29,7 +30,7 @@
                 <rosparam param="source_list">[/gripper/joint_states]</rosparam>
             </node>
         </group>
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotiq_85_bringup)/rviz/robotiq_85.rviz" />
+        <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotiq_85_bringup)/rviz/robotiq_85.rviz" /-->
     </group>
 
     <group if="$(arg dual_gripper)">
