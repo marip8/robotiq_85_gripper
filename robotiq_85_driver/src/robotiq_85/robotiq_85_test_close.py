@@ -58,10 +58,15 @@ class Robotiq85GripperTestClose:
         self._num_grippers = rospy.get_param('~num_grippers',1)
         self.open = rospy.get_param('~open',True)
         self.close = rospy.get_param('~close', False)
+        self._prefix = rospy.get_param('~prefix', None)
 
-        if (self._num_grippers == 1):
+        if (self._num_grippers == 1 and self._prefix is None):
             rospy.Subscriber("/gripper/stat", GripperStat, self._update_gripper_stat, queue_size=10)
             self._gripper_pub = rospy.Publisher('/gripper/cmd', GripperCmd, queue_size=10)
+        elif(self._num_grippers == 1 and self._prefix is not None):
+            rospy.logwarn('gripper prefix = {}'.format(self._prefix))
+            rospy.Subscriber("/"+self._prefix+"gripper/stat", GripperStat, self._update_gripper_stat, queue_size=10)
+            self._gripper_pub = rospy.Publisher('/'+self._prefix+'gripper/cmd', GripperCmd, queue_size=10)
         elif (self._num_grippers == 2):
             rospy.Subscriber("/left_gripper/stat", GripperStat, self._update_gripper_stat, queue_size=10)
             self._left_gripper_pub = rospy.Publisher('/left_gripper/stat', GripperCmd, queue_size=10)
