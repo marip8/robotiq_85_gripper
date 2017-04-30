@@ -43,7 +43,7 @@
                 <rosparam param="source_list">[/right_gripper/joint_states]</rosparam>
             </node>
         </group>
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotiq_85_bringup)/rviz/robotiq_85.rviz" />
+        <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotiq_85_bringup)/rviz/robotiq_85.rviz" /-->
     </group>
 
     <group if="$(arg dual_gripper)">
