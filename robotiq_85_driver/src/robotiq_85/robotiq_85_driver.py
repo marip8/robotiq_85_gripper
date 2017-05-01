@@ -55,10 +55,11 @@ import rospy
 
 class Robotiq85Driver:
     def __init__(self):
-        rospy.sleep(4.0) #put a sleep so it can connect to the force/torque sensor first
+        rospy.sleep(5.0) #put a leep so it can connect to the force/torque sensor first
         self._num_grippers = rospy.get_param('~num_grippers',1)
         self._comport = rospy.get_param('~comport','/dev/ttyUSB0')
         self._baud = rospy.get_param('~baud','115200')
+        self._prefix = rospy.get_param('~prefix', '')
 
         self._gripper = Robotiq85Gripper(self._num_grippers,self._comport,self._baud)
 
@@ -66,10 +67,15 @@ class Robotiq85Driver:
             rospy.logerr("Unable to open commport to %s" % self._comport)
             return
 
-        if (self._num_grippers == 1):
+        if (self._num_grippers == 1 and not self._prefix):
             rospy.Subscriber("/gripper/cmd", GripperCmd, self._update_gripper_cmd, queue_size=10)
             self._gripper_pub = rospy.Publisher('/gripper/stat', GripperStat, queue_size=10)
             self._gripper_joint_state_pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
+        elif(self._num_grippers == 1 and self._prefix):
+            rospy.logwarn('gripper prefix = {}'.format(self._prefix))
+            rospy.Subscriber("/"+self._prefix+"gripper/cmd", GripperCmd, self._update_gripper_cmd, queue_size=10)
+            self._gripper_pub = rospy.Publisher("/"+self._prefix+"gripper/stat", GripperStat, queue_size=10)
+            self._gripper_joint_state_pub = rospy.Publisher("/"+self._prefix+"gripper/joint_states", JointState, queue_size=10)
         elif (self._num_grippers == 2):
             rospy.Subscriber("/left_gripper/cmd", GripperCmd, self._update_gripper_cmd, queue_size=10)
             self._left_gripper_pub = rospy.Publisher('/left_gripper/stat', GripperStat, queue_size=10)
@@ -158,7 +164,7 @@ class Robotiq85Driver:
         js.header.frame_id = ''
         js.header.stamp = rospy.get_rostime()
         js.header.seq = self._seq[dev]
-        js.name = ['robotiq_85_left_knuckle_joint']
+        js.name = [self._prefix + 'robotiq_85_left_knuckle_joint']
         pos = np.clip(0.8 - ((0.8/0.085) * self._gripper.get_pos(dev)), 0., 0.8)
         js.position = [pos]
         dt = rospy.get_time() - self._prev_js_time[dev]
