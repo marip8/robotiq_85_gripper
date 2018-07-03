@@ -5,6 +5,29 @@
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.transmission.xacro" />
 	<xacro:property name="pi" value="3.14159"/>
 
+	<xacro:macro name="gazebo_grasp_fix_plugin" params="prefix">
+	<gazebo>
+		<plugin name="${prefix}gazebo_grasp_fix" filename="libgazebo_grasp_fix.so">
+			<arm>
+				<arm_name>robot</arm_name>
+				<palm_link> "${prefix}robotiq_85_left_inner_knuckle_link" </palm_link>
+				<gripper_link> "${prefix}robotiq_85_left_finger_tip_link" </gripper_link>
+				<palm_link> "${prefix}robotiq_85_right_inner_knuckle_link" </palm_link>
+				<gripper_link> "${prefix}robotiq_85_right_finger_tip_link" </gripper_link>
+			</arm>
+			<forces_angle_tolerance>120</forces_angle_tolerance>
+			<update_rate>10</update_rate>
+			<grip_count_threshold>1</grip_count_threshold>
+			<max_grip_count>20</max_grip_count>
+			<release_tolerance>0.005</release_tolerance>
+			<disable_collisions_on_attach>true</disable_collisions_on_attach>
+			<contact_topic>__default_topic__</contact_topic>
+		</plugin>
+	</gazebo>
+	</xacro:macro>
+
+	<xacro:gazebo_grasp_fix_plugin prefix="" /> 
+
 	<xacro:macro name="mimic_joint_plugin_gazebo" params="name_prefix parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
 		<gazebo>
 			<plugin name="${name_prefix}mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
@@ -57,18 +80,40 @@
 			<child link="${prefix}robotiq_85_left_knuckle_link"/>
 			<axis xyz="0 0 1"/>
 			<origin rpy="${pi} 0.0 0.0" xyz="0.05490451627 0.03060114443 0.0"/>
-			<limit lower="0.0" upper="0.804" velocity="2.0" effort="1000"/>
+			<limit lower="0.0" upper="0.804" velocity="0.5" effort="50"/>
+			<dynamics damping="100.0" />
 		</joint>
+
+
+		<gazebo reference="${prefix}robotiq_85_left_knuckle_link">
+			<kp>1000000.0</kp>
+			<kd>100.0</kd>
+			<mu1>30.0</mu1>
+			<mu2>30.0</mu2>
+			<maxVel>1.0</maxVel>
+			<minDepth>0.001</minDepth>
+			<material>Gazebo/Grey</material>
+		</gazebo>
 
 		<joint name="${prefix}robotiq_85_right_knuckle_joint" type="continuous">
 			<parent link="${prefix}robotiq_85_base_link"/>
 			<child link="${prefix}robotiq_85_right_knuckle_link"/>
 			<axis xyz="0 0 1"/>
 			<origin rpy="0.0 0.0 0.0" xyz="0.05490451627 -0.03060114443 0.0"/>
-			<limit lower="-3.14" upper="3.14" velocity="100.0" effort="1000"/>
+			<limit lower="-3.14" upper="3.14" velocity="100.0" effort="50"/>
 			<mimic joint="${prefix}robotiq_85_left_knuckle_joint"/>
+			<dynamics damping="100.0" />
 		</joint>
 
+		<gazebo reference="${prefix}robotiq_85_right_knuckle_link">
+			<kp>1000000.0</kp>
+			<kd>100.0</kd>
+			<mu1>30.0</mu1>
+			<mu2>30.0</mu2>
+			<maxVel>1.0</maxVel>n name="gazebo_grasp_fix" filename="libgazebo_grasp_fix.so"
+			<minDepth>0.001</minDepth>
+			<material>Gazebo/Grey</material>
+		</gazebo>
 		<xacro:mimic_joint_plugin_gazebo name_prefix="{prefix}robotiq_85_right_knuckle_joint"
 			parent_joint="${prefix}robotiq_85_left_knuckle_joint" mimic_joint="${prefix}robotiq_85_right_knuckle_joint"
 			multiplier="1.0" max_effort="10.0" />
@@ -120,11 +165,13 @@
 			<origin xyz="-0.00408552455 -0.03148604435 0.0" rpy="0 0 0" />
 		</joint>
 
+
 		<joint name="${prefix}robotiq_85_right_finger_joint" type="fixed">
 			<parent link="${prefix}robotiq_85_right_knuckle_link"/>
 			<child link="${prefix}robotiq_85_right_finger_link"/>
 			<origin xyz="-0.00408552455 -0.03148604435 0.0" rpy="0 0 0" />
 		</joint>
+
 
 		<link name="${prefix}robotiq_85_left_finger_link">
 			<visual>
@@ -146,6 +193,7 @@
 			</inertial>
 		</link>
 
+
 		<link name="${prefix}robotiq_85_right_finger_link">
 			<visual>
 				<geometry>
@@ -165,6 +213,7 @@
 					izx = "0.000000" izy = "0.000000" izz = "0.000020" />
 			</inertial>
 		</link>
+
 
 		<joint name="${prefix}robotiq_85_left_inner_knuckle_joint" type="continuous">
 			<parent link="${prefix}robotiq_85_base_link"/>
@@ -277,6 +326,15 @@
 			</inertial>
 		</link>
 
+		<gazebo reference="${prefix}robotiq_85_left_finger_tip_link">
+			<kp>1000000.0</kp>
+			<kd>100.0</kd>
+			<mu1>30.0</mu1>
+			<mu2>30.0</mu2>
+			<maxVel>1.0</maxVel>
+			<minDepth>0.001</minDepth>
+			<material>Gazebo/Grey</material>
+		</gazebo>
 		<link name="${prefix}robotiq_85_right_finger_tip_link">
 			<visual>
 				<geometry>
@@ -297,6 +355,15 @@
 			</inertial>
 		</link>
 
+		<gazebo reference="${prefix}robotiq_85_right_finger_tip_link">
+			<kp>1000000.0</kp>
+			<kd>100.0</kd>
+			<mu1>30.0</mu1>
+			<mu2>30.0</mu2>
+			<maxVel>1.0</maxVel>
+			<minDepth>0.001</minDepth>
+			<material>Gazebo/Grey</material>
+		</gazebo>
 		<xacro:robotiq_85_gripper_transmission prefix="${prefix}" />
 
 	</xacro:macro>
