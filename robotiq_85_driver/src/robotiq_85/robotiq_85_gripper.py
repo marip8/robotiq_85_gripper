@@ -2,6 +2,8 @@ import serial
 from gripper_io import GripperIO
 from modbus_crc import verify_modbus_rtu_crc
 import array
+import rospy
+import sys
 
 class Robotiq85Gripper:
     def __init__(self,num_grippers=1,comport='/dev/ttyUSB0',baud=115200):
@@ -28,23 +30,33 @@ class Robotiq85Gripper:
             return False
         try:    
             self.ser.write(self._gripper[dev].act_cmd_bytes)
+            #rospy.loginfo('Act Cmd')
+            #rospy.loginfo(self._gripper[dev].act_cmd)
             rsp = self.ser.read(8)
             rsp = [ord(x) for x in rsp]
+            #rospy.loginfo(rsp)
             if (len(rsp) != 8):
+                #rospy.logerr('Act Length is ' + str(len(rsp)))
                 return False
             return verify_modbus_rtu_crc(rsp)
         except:
+            #rospy.logerr(sys.exc_info()[0])
             return False
         
     def process_stat_cmd(self,dev=0):
         try:
             self.ser.write(self._gripper[dev].stat_cmd_bytes)
+            #rospy.loginfo('Stat Cmd')
+            #rospy.loginfo(self._gripper[dev].stat_cmd)
             rsp = self.ser.read(21)
             rsp = [ord(x) for x in rsp]
+            #rospy.loginfo(rsp)
             if (len(rsp) != 21):
+                #rospy.logerr('Stat Length is ' + str(len(rsp)))
                 return False
             return self._gripper[dev].parse_rsp(rsp)
         except:
+            #rospy.logerr(sys.exc_info()[0])
             return False
 
     def activate_gripper(self,dev=0):

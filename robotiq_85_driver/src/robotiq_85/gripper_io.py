@@ -78,6 +78,12 @@ class GripperIO:
         self.act_cmd[:7] = [self.device, 0x10, 0x03, 0xE8, 0x00,0x08, 0x10]
         self.act_cmd_bytes = ""
         self._update_cmd()
+        # Description from Manual:
+        # self.device = SlaveID
+        # 0x03 = Function Code 03, Read Holding Registers
+        # 0x07D0 = Address of the first requested register
+        # 0x0008 = Number of registers requested
+        # Note that there isn't a Cyclic Redundance Check (adds 0xC5CE to the end)
         self.stat_cmd = [self.device, 0x03, 0x07, 0xD0, 0x00, 0x08]
         compute_modbus_rtu_crc(self.stat_cmd)
         self.stat_cmd_bytes = array.array('B',self.stat_cmd).tostring()
