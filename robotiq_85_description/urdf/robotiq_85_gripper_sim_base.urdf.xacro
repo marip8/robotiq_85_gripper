@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-
-
 <robot name="robotiq_85_gripper_sim_base" xmlns:xacro="http://ros.org/wiki/xacro">
     <xacro:macro name="robotiq_85_gripper_sim_base" params="prefix">
 
@@ -26,6 +24,5 @@
                          izx = "0.000000" izy = "0.000000" izz = "0.000001" />
             </inertial>
         </link>
-
     </xacro:macro>
 </robot>

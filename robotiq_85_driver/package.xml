@@ -1,18 +1,25 @@
-<package>
+<?xml version="1.0"?>
+<package format="3">
     <name>robotiq_85_driver</name>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <description>Drivers and nodes related to the Robotiq 85 Gripper</description>
-    
     <maintainer email="dev@stanleyinnovation.com">Stanley Innovation, Inc.</maintainer>
     <license>BSD</license>
     <author>Patrick Hussey</author>
 
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_python</buildtool_depend>
     
-    <!-- Packages needed to run but not to build-->
-    <run_depend>robotiq_85_msgs</run_depend>
-    <run_depend>robotiq_85_description</run_depend>
+    <exec_depend>control_msgs</exec_depend>
+    <exec_depend>rclpy</exec_depend>
+    <exec_depend>robotiq_85_msgs</exec_depend>
+    <exec_depend>sensor_msgs</exec_depend>
+
+    <test_depend>ament_copyright</test_depend>
+    <test_depend>ament_flake8</test_depend>
+    <test_depend>ament_pep257</test_depend>
+    <test_depend>python3-pytest</test_depend>
 
 	<export>
+        <build_type>ament_python</build_type>
 	</export>
 </package>

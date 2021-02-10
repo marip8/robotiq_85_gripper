@@ -1,13 +1,23 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10.2)
 project(robotiq_85_msgs)
 
-find_package(catkin REQUIRED COMPONENTS message_generation std_msgs)
+find_package(ament_cmake REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
 
-add_message_files(DIRECTORY msg FILES 
-                                GripperCmd.msg 
-                                GripperStat.msg)
+set(msg_files
+  "msg/GripperCmd.msg"
+  "msg/GripperStat.msg"
+)
 
-generate_messages(DEPENDENCIES std_msgs)
-catkin_package(CATKIN_DEPENDS message_runtime std_msgs)
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  DEPENDENCIES
+    builtin_interfaces
+    std_msgs
+)
 
+ament_export_dependencies(rosidl_default_runtime)
+ament_package()
                       

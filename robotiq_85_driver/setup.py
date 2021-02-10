@@ -1,12 +1,32 @@
-#!/usr/bin/env python3
-## ! DO NOT MANUALLY INVOKE THIS setup.py, USE CATKIN INSTEAD
+import os
+from glob import glob
+from setuptools import setup
 
-from distutils.core import setup
-from catkin_pkg.python_setup import generate_distutils_setup
+package_name = 'robotiq_85_driver'
 
-# fetch values from package.xml
-setup_args = generate_distutils_setup(
-    packages=['robotiq_85'],
-    package_dir={'': 'src'})
-
-setup(**setup_args)
+setup(
+    name=package_name,
+    version='1.0.0',
+    packages=[package_name],
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch/*.launch.py'))),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    maintainer='Stanley Innovation, Inc.',
+    maintainer_email='dev@stanleyinnovation.com',
+    description='Drivers and nodes related to the Robotiq 85 Gripper',
+    license='BSD',
+    tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'robotiq_85_driver = robotiq_85_driver.robotiq_85_driver:main',
+            'single_robotiq_85_action_server = robotiq_85_driver.single_robotiq_85_action_server:main',
+            'robotiq_85_test = robotiq_85_driver.robotiq_85_test:main',
+            'robotiq_85_test_close = robotiq_85_driver.robotiq_85_test_close:main',
+        ],
+    },
+)

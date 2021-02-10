@@ -1,4 +1,4 @@
-Header header
+std_msgs/Header header
 bool is_ready
 bool is_reset
 bool is_moving

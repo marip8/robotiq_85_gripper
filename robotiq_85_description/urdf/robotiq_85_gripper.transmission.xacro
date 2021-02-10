@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-
   <xacro:macro name="robotiq_85_gripper_transmission" params="prefix">
-
         <transmission name="${prefix}robotiq_85_left_knuckle_trans">
             <type>transmission_interface/SimpleTransmission</type>
             <joint name="${prefix}robotiq_85_left_knuckle_joint">
@@ -47,7 +45,5 @@
                 <offset>0.0</offset>
             </plugin>
         </gazebo>
-
     </xacro:macro>
-
 </robot>
