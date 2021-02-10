@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="tool_changer" params="prefix connected_to">
+
+    <joint name="${prefix}tool_changer_joint" type="fixed">
+      <!-- The parent link must be read from the robot model it is attached to. -->
+      <parent link="${connected_to}"/>
+      <child link="${prefix}tool_changer_link"/>
+      <!-- Adjust the origin a little to make the tool changer origin to coincide the parent link origin. -->
+      <origin xyz="0 0 -0.006" rpy="0 0 ${pi/2.0}"/>
+    </joint>
+
+    <link name="${prefix}tool_changer_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="package://robotiq_85_description/meshes/visual/mtc_ur3510_ur_df_toolchanger.stl" />
+          </geometry>
+          <material name="">
+            <color rgba="0.25 0.25 0.25 1" />
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="package://robotiq_85_description/meshes/collision/mtc_ur3510_ur_df_toolchanger.stl" />
+          </geometry>
+        </collision>
+    </link>
+
+    <joint name="${prefix}tool_side_joint" type="fixed">
+      <!-- The parent link must be read from the robot model it is attached to. -->
+      <parent link="${prefix}tool_changer_link"/>
+      <child link="${prefix}tool_changer_tool0"/>
+      <!-- The tool is directly attached to the flange. -->
+      <origin xyz="0 0 0.0391" rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}tool_changer_tool0"/>
+
+  </xacro:macro>
+</robot>
+

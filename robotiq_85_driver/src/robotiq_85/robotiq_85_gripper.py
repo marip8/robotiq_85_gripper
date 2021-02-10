@@ -1,19 +1,19 @@
 import serial
-from gripper_io import GripperIO
-from modbus_crc import verify_modbus_rtu_crc
+from .gripper_io import GripperIO
+from .modbus_crc import verify_modbus_rtu_crc
 import array
 import rospy
 import sys
 
 class Robotiq85Gripper:
     def __init__(self,num_grippers=1,comport='/dev/ttyUSB0',baud=115200):
-        
+
         try:
             self.ser = serial.Serial(comport,baud,timeout = 0.2)
         except:
             self.init_success = False
             return
-        
+
         self._gripper = []
         self._num_grippers = num_grippers
         for i in range(self._num_grippers):
@@ -24,16 +24,16 @@ class Robotiq85Gripper:
     def shutdown(self):
         self._shutdown_driver = True
         self.ser.close()
-    
+
     def process_act_cmd(self,dev=0):
         if (dev >= self._num_grippers) or (self._shutdown_driver):
             return False
-        try:    
+        try:
             self.ser.write(self._gripper[dev].act_cmd_bytes)
             #rospy.loginfo('Act Cmd')
             #rospy.loginfo(self._gripper[dev].act_cmd)
             rsp = self.ser.read(8)
-            rsp = [ord(x) for x in rsp]
+            rsp = [int(x) for x in rsp]
             #rospy.loginfo(rsp)
             if (len(rsp) != 8):
                 #rospy.logerr('Act Length is ' + str(len(rsp)))
@@ -42,14 +42,14 @@ class Robotiq85Gripper:
         except:
             #rospy.logerr(sys.exc_info()[0])
             return False
-        
+
     def process_stat_cmd(self,dev=0):
         try:
             self.ser.write(self._gripper[dev].stat_cmd_bytes)
             #rospy.loginfo('Stat Cmd')
             #rospy.loginfo(self._gripper[dev].stat_cmd)
             rsp = self.ser.read(21)
-            rsp = [ord(x) for x in rsp]
+            rsp = [int(x) for x in rsp]
             #rospy.loginfo(rsp)
             if (len(rsp) != 21):
                 #rospy.logerr('Stat Length is ' + str(len(rsp)))
@@ -63,17 +63,17 @@ class Robotiq85Gripper:
         if (dev >= self._num_grippers):
             return
         self._gripper[dev].activate_gripper()
-    
+
     def deactivate_gripper(self,dev=0):
         if (dev >= self._num_grippers):
             return
         self._gripper[dev].deactivate_gripper()
-        
+
     def activate_emergency_release(self,dev=0,open_gripper=True):
         if (dev >= self._num_grippers):
             return
         self._gripper[dev].activate_emergency_release(open_gripper)
-                
+
     def deactivate_emergency_release(self,dev=0):
         if (dev >= self._num_grippers):
             return
@@ -88,7 +88,7 @@ class Robotiq85Gripper:
         if (dev >= self._num_grippers):
             return
         self._gripper[dev].stop()
-                    
+
     def is_ready(self,dev=0):
         if (dev >= self._num_grippers):
             return False

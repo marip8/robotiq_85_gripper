@@ -47,7 +47,7 @@ arising out of or based upon:
 
  \Platform: Linux/ROS Indigo
 --------------------------------------------------------------------"""
-from robotiq_85_gripper import Robotiq85Gripper
+from .robotiq_85_gripper import Robotiq85Gripper
 from robotiq_85_msgs.msg import GripperCmd, GripperStat
 from sensor_msgs.msg import JointState
 import numpy as np
@@ -60,7 +60,7 @@ class Robotiq85Driver:
         self._comport = rospy.get_param('~comport','/dev/ttyUSB0')
         self._baud = rospy.get_param('~baud','115200')
         self._prefix = rospy.get_param('~prefix', '')
-	if self._prefix != "" and self._prefix[-1] != "_":
+        if self._prefix != "" and self._prefix[-1] != "_":
             self._prefix += "_"
 
         self._gripper = Robotiq85Gripper(self._num_grippers,self._comport,self._baud)
