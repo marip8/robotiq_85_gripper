@@ -107,7 +107,7 @@ class Robotiq85GripperTestClose(Node):
             self.get_logger().info('Opening/Closing Gripper')
             for i in range(self._num_grippers):
                 if self.open:
-                    self._gripper_cmd[i].position = 0.85
+                    self._gripper_cmd[i].position = 0.085
                 else:
                     self._gripper_cmd[i].position = 0.0
 
