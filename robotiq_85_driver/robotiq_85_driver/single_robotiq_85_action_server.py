@@ -97,7 +97,7 @@ class Robotiq85ActionServer(Node):
         self._action_server = ActionServer(
             self,
             GripperCommand,
-            '/gripper_action/GripperCommand',
+            '/gripper/gripper_action',
             goal_callback=self._goal_callback,
             cancel_callback=self._cancel_callback,
             execute_callback=self._execute_callback,
@@ -108,7 +108,8 @@ class Robotiq85ActionServer(Node):
         self._driver_state = 0
         self._driver_ready = False
 
-        success = self._gripper.process_stat_cmd(0)
+        success = True
+        success &= self._gripper.process_stat_cmd(0)
         if not success:
             self.get_logger().error("Failed to contact gripper")
             return
@@ -154,21 +155,22 @@ class Robotiq85ActionServer(Node):
             if (self._driver_state == 0):
                 if (dt < 0.5):
                     self._gripper.deactivate_gripper(0)
-                    self.get_logger().info('Deactivate_gripper')
+                    # self.get_logger().info('Deactivate_gripper')
                 else:
                     self._driver_state = 1
 
             elif (self._driver_state == 1):
+                grippers_activated = True
                 self._gripper.activate_gripper(0)
-                grippers_activated = self._gripper.is_ready(0)
-                self.get_logger().info('Activate gripper and status: %r'% grippers_activated)
+                grippers_activated &= self._gripper.is_ready(0)
+                # self.get_logger().info('Activate gripper and status: %r'% grippers_activated)
                 
                 if (grippers_activated):
                     self._driver_state = 2
 
             elif (self._driver_state == 2):
                 self._driver_ready = True  
-                self.get_logger().info('Gripper driver is ready')
+                # self.get_logger().info('Gripper driver is ready')
                 break
 
 
@@ -217,8 +219,9 @@ class Robotiq85ActionServer(Node):
                 self.get_logger().warn('Driver not ready')
                 break
 
-            success = self._gripper.process_act_cmd(0)
-            success = self._gripper.process_stat_cmd(0)
+            success = True
+            success &= self._gripper.process_act_cmd(0)
+            success &= self._gripper.process_stat_cmd(0)
             if not success:
                 self.get_logger().error("Failed to contact gripper")
             else:
