@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <robot name="robotiq_85_gripper" xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.transmission.xacro" />
-	<xacro:property name="pi" value="3.14159"/>
 
 	<xacro:macro name="mimic_joint_plugin_gazebo" params="name_prefix parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
 		<gazebo>
@@ -31,6 +30,17 @@
 		</joint>
 
 		<link name="${prefix}robotiq_85_base_link">
+			<!-- Visual aid for grasping -->
+			<visual>
+				<origin xyz="0.16 0 0" rpy="0 0 0" />
+				<geometry>
+					<sphere radius="0.007"/>
+				</geometry>
+				<material name="">
+					<color rgba="0 1.0 0 1.0"/>
+				</material>
+			</visual>
+			<!-- Gripper body -->
 			<visual>
 				<geometry>
 					<mesh filename="package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae"/>
