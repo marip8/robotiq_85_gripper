@@ -33,19 +33,19 @@
 			<!-- Visual aid for grasping -->
 			<visual>
 				<origin xyz="0.16 0 0" rpy="0 0 0" />
-        <geometry>
-          <sphere radius="0.007"/>
-        </geometry>
-        <material name="">
+				<geometry>
+					<sphere radius="0.007"/>
+				</geometry>
+				<material name="">
 					<color rgba="0 1.0 0 1.0"/>
-        </material>
-      </visual>
+				</material>
+			</visual>
 			<!-- Gripper body -->
 			<visual>
 				<geometry>
 					<mesh filename="package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae"/>
 				</geometry>
-			</visual>			
+			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://robotiq_85_description/meshes/collision/robotiq_85_base_link.stl"/>
