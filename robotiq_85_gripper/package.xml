@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>robotiq_85_gripper</name>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <description>Robotiq 85 Gripper Package</description>
   <maintainer email="dev@stanleyinnovation.com">Patrick Hussey</maintainer>
   <license>BSD</license>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
     <name>robotiq_85_driver</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>Drivers and nodes related to the Robotiq 85 Gripper</description>
     <maintainer email="dev@stanleyinnovation.com">Stanley Innovation, Inc.</maintainer>
     <license>BSD</license>
