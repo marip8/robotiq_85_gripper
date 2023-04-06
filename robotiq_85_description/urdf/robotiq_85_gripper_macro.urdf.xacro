@@ -3,22 +3,22 @@
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.transmission.xacro" />
 
 	<xacro:macro name="mimic_joint_plugin_gazebo" params="name_prefix parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
-		<gazebo>
-			<plugin name="${name_prefix}mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
-				<joint>${parent_joint}</joint>
-				<mimicJoint>${mimic_joint}</mimicJoint>
-				<xacro:if value="${has_pid}">                     <!-- if set to true, PID parameters from "/gazebo_ros_control/pid_gains/${mimic_joint}" are loaded -->
-					<hasPID />
-				</xacro:if>
-				<multiplier>${multiplier}</multiplier>
-				<offset>${offset}</offset>
-				<sensitiveness>${sensitiveness}</sensitiveness>   <!-- if absolute difference between setpoint and process value is below this threshold, do nothing; 0.0 = disable [rad] -->
-				<maxEffort>${max_effort}</maxEffort>              <!-- only taken into account if has_pid:=true [Nm] -->
-				<xacro:unless value="${robot_namespace == ''}">
-					<robotNamespace>($robot_namespace)</robotNamespace>
-				</xacro:unless>
-			</plugin>
-		</gazebo>
+    <gazebo>
+      <plugin name="${name_prefix}mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+        <joint>${parent_joint}</joint>
+        <mimicJoint>${mimic_joint}</mimicJoint>
+        <xacro:if value="${has_pid}">                     <!-- if set to true, PID parameters from "/gazebo_ros_control/pid_gains/${mimic_joint}" are loaded -->
+          <hasPID />
+        </xacro:if>
+        <multiplier>${multiplier}</multiplier>
+        <offset>${offset}</offset>
+        <sensitiveness>${sensitiveness}</sensitiveness>   <!-- if absolute difference between setpoint and process value is below this threshold, do nothing; 0.0 = disable [rad] -->
+        <maxEffort>${max_effort}</maxEffort>              <!-- only taken into account if has_pid:=true [Nm] -->
+        <xacro:unless value="${robot_namespace == ''}">
+          <robotNamespace>($robot_namespace)</robotNamespace>
+        </xacro:unless>
+      </plugin>
+    </gazebo>
 	</xacro:macro>
 
 	<xacro:macro name="robotiq_85_gripper" params="prefix parent *origin sim:=false">
@@ -41,16 +41,6 @@
 		</joint>
 
 		<link name="${prefix}robotiq_85_base_link">
-			<!-- Visual aid for grasping -->
-			<visual>
-				<origin xyz="0.16 0 0" rpy="0 0 0" />
-				<geometry>
-					<sphere radius="0.007"/>
-				</geometry>
-				<material name="">
-					<color rgba="0 1.0 0 1.0"/>
-				</material>
-			</visual>
 			<!-- Gripper body -->
 			<visual>
 				<geometry>
@@ -110,9 +100,9 @@
 			<minDepth>0.001</minDepth>
 			<material>Gazebo/Grey</material>
 		</gazebo>
-		<xacro:mimic_joint_plugin_gazebo name_prefix="{prefix}robotiq_85_right_knuckle_joint"
+    <xacro:mimic_joint_plugin_gazebo name_prefix="{prefix}robotiq_85_right_knuckle_joint"
 			parent_joint="${prefix}robotiq_85_left_knuckle_joint" mimic_joint="${prefix}robotiq_85_right_knuckle_joint"
-			multiplier="1.0" max_effort="10.0" />
+      multiplier="1.0" max_effort="10.0" />
 
 
 		<link name="${prefix}robotiq_85_left_knuckle_link">
@@ -220,9 +210,9 @@
 			<mimic joint="${prefix}robotiq_85_left_knuckle_joint" offset="0"/>
 		</joint>
 
-		<xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_left_inner_knuckle_joint"
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_left_inner_knuckle_joint"
 			parent_joint="${prefix}robotiq_85_left_knuckle_joint" mimic_joint="${prefix}robotiq_85_left_inner_knuckle_joint"
-			multiplier="1.0" max_effort="10.0" />
+      multiplier="1.0" max_effort="10.0" />
 
 		<joint name="${prefix}robotiq_85_right_inner_knuckle_joint" type="continuous">
 			<parent link="${prefix}robotiq_85_base_link"/>
@@ -233,9 +223,9 @@
 			<mimic joint="${prefix}robotiq_85_left_knuckle_joint" offset="0"/>
 		</joint>
 
-		<xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_right_inner_knuckle_joint"
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_right_inner_knuckle_joint"
 			parent_joint="${prefix}robotiq_85_left_knuckle_joint" mimic_joint="${prefix}robotiq_85_right_inner_knuckle_joint"
-			multiplier="1.0" max_effort="10.0" />
+      multiplier="1.0" max_effort="10.0" />
 
 		<link name="${prefix}robotiq_85_left_inner_knuckle_link">
 			<visual>
@@ -285,9 +275,9 @@
 			<mimic joint="${prefix}robotiq_85_left_knuckle_joint" multiplier="-1"/>
 		</joint>
 
-		<xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_left_finger_tip_joint"
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_left_finger_tip_joint"
 			parent_joint="${prefix}robotiq_85_left_knuckle_joint" mimic_joint="${prefix}robotiq_85_left_finger_tip_joint"
-			multiplier="1.0" max_effort="10.0" />
+      multiplier="1.0" max_effort="10.0" />
 
 		<joint name="${prefix}robotiq_85_right_finger_tip_joint" type="continuous">
 			<parent link="${prefix}robotiq_85_right_inner_knuckle_link"/>
@@ -298,9 +288,9 @@
 			<mimic joint="${prefix}robotiq_85_left_knuckle_joint" multiplier="-1"/>
 		</joint>
 
-		<xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_right_finger_tip_joint"
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${prefix}robotiq_85_right_finger_tip_joint"
 			parent_joint="${prefix}robotiq_85_left_knuckle_joint" mimic_joint="${prefix}robotiq_85_right_finger_tip_joint"
-			multiplier="1.0" max_effort="10.0" />
+      multiplier="1.0" max_effort="10.0" />
 
 		<link name="${prefix}robotiq_85_left_finger_tip_link">
 			<visual>
