@@ -69,11 +69,13 @@ class Robotiq85Driver(Node):
         self.declare_parameter('comport', '/dev/ttyUSB0')
         self.declare_parameter('baud', '115200')
         self.declare_parameter('connection_attempts', 1)
+        self.declare_parameter('joint_name', 'robotiq_85_left_knuckle_joint')
 
         self._num_grippers = self.get_parameter('num_grippers').get_parameter_value().integer_value
         self._comport = self.get_parameter('comport').get_parameter_value().string_value
         self._baud = self.get_parameter('baud').get_parameter_value().string_value
         connection_attempts = self.get_parameter('connection_attempts').get_parameter_value().integer_value
+        self._joint_name = self.get_parameter('joint_name').get_parameter_value().string_value
 
         self.get_logger().info("Parameters num_grippers: %i, Comport: %s, Baud rate: %s " % (self._num_grippers, self._comport, self._baud))
 
@@ -192,7 +194,7 @@ class Robotiq85Driver(Node):
         js = JointState()
         js.header.frame_id = ''
         js.header.stamp = self.get_clock().now().to_msg()
-        js.name = ['robotiq_85_left_knuckle_joint']
+        js.name = [self._joint_name]
         pos = np.clip(0.8 - ((0.8/0.085) * self._gripper.get_pos(dev)), 0., 0.8)
         js.position = [pos]
         dt = self.get_time() - self._prev_js_time[dev]
