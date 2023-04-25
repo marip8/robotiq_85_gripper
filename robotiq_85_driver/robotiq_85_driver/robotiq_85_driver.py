@@ -50,6 +50,7 @@ arising out of or based upon:
 
 import numpy as np
 import sys
+import signal
 
 import rclpy
 from rclpy.node import Node
@@ -67,30 +68,33 @@ class Robotiq85Driver(Node):
         self.declare_parameter('num_grippers', 1)
         self.declare_parameter('comport', '/dev/ttyUSB0')
         self.declare_parameter('baud', '115200')
+        self.declare_parameter('connection_attempts', 1)
 
         self._num_grippers = self.get_parameter('num_grippers').get_parameter_value().integer_value
         self._comport = self.get_parameter('comport').get_parameter_value().string_value
         self._baud = self.get_parameter('baud').get_parameter_value().string_value
-        
-        self.get_logger().info("Parameters Num gippers: %i, Comport: %s, Baud rate: %s " % (self._num_grippers, self._comport, self._baud))
+        connection_attempts = self.get_parameter('connection_attempts').get_parameter_value().integer_value
+
+        self.get_logger().info("Parameters num_grippers: %i, Comport: %s, Baud rate: %s " % (self._num_grippers, self._comport, self._baud))
 
         self._gripper = Robotiq85Gripper(self._num_grippers, self._comport, self._baud)
+        self.get_logger().info("Created gripper object")
 
         if not self._gripper.init_success:
-            self.get_logger().error("Unable to open commport to %s: " % self._comport)
+            self.get_logger().error("Unable to open comport to %s: " % self._comport)
             return
 
         if (self._num_grippers == 1):
-            self.create_subscription(GripperCmd, "/gripper/cmd", self._update_gripper_cmd, 10)
-            self._gripper_pub = self.create_publisher(GripperStat, '/gripper/stat', 10)
-            self._gripper_joint_state_pub = self.create_publisher(JointState, '/joint_states', 10)
+            self.create_subscription(GripperCmd, "gripper/cmd", self._update_gripper_cmd, 10)
+            self._gripper_pub = self.create_publisher(GripperStat, 'gripper/stat', 10)
+            self._gripper_joint_state_pub = self.create_publisher(JointState, 'joint_states', 10)
         elif (self._num_grippers == 2):
-            self.create_subscription(GripperCmd, "/left_gripper/cmd", self._update_gripper_cmd, 10)
-            self._left_gripper_pub = self.create_publisher(GripperStat, '/left_gripper/stat', 10)
-            self._left_gripper_joint_state_pub = self.create_publisher(JointState, '/left_gripper/joint_states', 10)
-            self.create_subscription(GripperCmd, "/right_gripper/cmd", self._update_right_gripper_cmd, 10)
-            self._right_gripper_pub = self.create_publisher(GripperStat, '/right_gripper/stat', 10)
-            self._right_gripper_joint_state_pub = self.create_publisher(JointState, '/right_gripper/joint_states', 10)
+            self.create_subscription(GripperCmd, "left_gripper/cmd", self._update_gripper_cmd, 10)
+            self._left_gripper_pub = self.create_publisher(GripperStat, 'left_gripper/stat', 10)
+            self._left_gripper_joint_state_pub = self.create_publisher(JointState, 'left_gripper/joint_states', 10)
+            self.create_subscription(GripperCmd, "right_gripper/cmd", self._update_right_gripper_cmd, 10)
+            self._right_gripper_pub = self.create_publisher(GripperStat, 'right_gripper/stat', 10)
+            self._right_gripper_joint_state_pub = self.create_publisher(JointState, 'right_gripper/joint_states', 10)
         else:
             self.get_logger().error("Number of grippers not supported (needs to be 1 or 2)")
             return
@@ -101,30 +105,32 @@ class Robotiq85Driver(Node):
         self._driver_ready = False
 
         success = True
-        for i in range(self._num_grippers):
-            success &= self._gripper.process_stat_cmd(i)
-            if not success:
-                bad_gripper = i
+        self.get_logger().info(f'Attempt to read gripper status using {connection_attempts} attempts')
+        for _ in range(connection_attempts):
+            for i in range(self._num_grippers):
+                success &= self._gripper.process_stat_cmd(i)
+                if not success:
+                    bad_gripper = i
+            if success:
+                self.get_logger().info(f'Successfully read gripper status after {_ + 1} attempts')
+                break
         if not success:
-            self.get_logger().error("Failed to contact gripper %d....ABORTING"%bad_gripper)
-            return
+            raise RuntimeError(f"Failed to contact gripper {bad_gripper} after {_} attempts; ABORTING")
 
         self._last_time = self.get_time()
 
-        # # 100 Hz timer 
+        # 100 Hz timer
         self.timer = self.create_timer(0.01, self._timer_callback)
 
     def __del__(self):
-        self.shutdown()
+        self.get_logger().info("Shutdown gripper")
+        self.timer.cancel()
+        self.timer.destroy()
+        self._gripper.shutdown()
 
     def get_time(self):
         time_msg = self.get_clock().now().to_msg()
         return float(time_msg.sec) + (float(time_msg.nanosec) * 1e-9)
-
-
-    def shutdown(self):
-        self.get_logger().info("Shutdown gripper")
-        self._gripper.shutdown()
 
 
     def _clamp_cmd(self,cmd,lower,upper):
@@ -241,16 +247,19 @@ class Robotiq85Driver(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    try:
-        node = Robotiq85Driver()
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    except ExternalShutdownException:
-        sys.exit(1)
-    finally:
+    node = Robotiq85Driver()
+    node.get_logger().info('Starting gripper driver(s)')
+
+    # Handle ctrl-C
+    def signal_handler(_sig, _frame):
+        node.get_logger().info("Stopping gripper driver(s)")
         node.destroy_node()
         rclpy.try_shutdown()
+        sys.exit(1)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    rclpy.spin(node)
+    return 0
 
 
 if __name__ == "__main__":

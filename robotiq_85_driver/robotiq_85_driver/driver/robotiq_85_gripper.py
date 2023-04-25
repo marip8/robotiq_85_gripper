@@ -7,13 +7,7 @@ import sys
 
 class Robotiq85Gripper:
     def __init__(self,num_grippers=1,comport='/dev/ttyUSB0',baud=115200):
-
-        try:
-            self.ser = serial.Serial(comport,baud,timeout = 0.2)
-        except:
-            self.init_success = False
-            return
-
+        self.ser = serial.Serial(comport,baud,timeout = 0.2)
         self._gripper = []
         self._num_grippers = num_grippers
         for i in range(self._num_grippers):
